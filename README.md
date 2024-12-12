@@ -13,7 +13,7 @@ The Granite Embedding lineup includes four different models of varying sizes:
 Accordingly, these options provide a range of models with different compute requirements to choose from, with appropriate trade-offs with their performance on downstream tasks.
 
 ## Data Collection
-Granite embedding models are trained using data from of four key sources: (1) unsupervised title-body paired data scraped from the web, (2) publicly available paired with permissive, enterprise-friendly license, (3) IBM-internal paired data targetting specific technical domains, and (4) IBM-generated synthetic data. Notably, we do not use the popular MS-MARCO retrieval dataset in our training corpus due to its non-commercial license, while other open-source models train on this dataset due to its high quality. 
+Granite embedding models are trained using data from of four key sources: (1) unsupervised title-body paired data scraped from the web, (2) publicly available paired with permissive, enterprise-friendly license, (3) IBM-internal paired data targeting specific technical domains, and (4) IBM-generated synthetic data. Notably, we do not use the popular MS-MARCO retrieval dataset in our training corpus due to its non-commercial license, while other open-source models train on this dataset due to its high quality. 
 
 For governance, all our data undergoes a data clearance process subject to technical, business, and governance review. This comprehensive process captures critical information about the data, including but not limited to their content description ownership, intended use, data classification, licensing information, usage restrictions, how the data will be acquired, as well as an assessment of sensitive information (i.e, personal information). 
 
@@ -58,6 +58,7 @@ To use any of our models, pick an appropriate `model_path` from:
 4. `ibm-granite/granite-embedding-278m-multilingual`
 
 ### Inference
+**Usage with Sentence Transformers:** 
 This is a simple example of how to use granite-embedding-30m-english model with sentence_transformers.
 
 First, install the sentence transformers library
