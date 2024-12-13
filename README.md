@@ -139,6 +139,8 @@ The model of choice (granite-embedding-30m-english in this example) can be clone
 ```shell
 git clone https://huggingface.co/ibm-granite/granite-embedding-30m-english
 ```
+## How to Contribute to this Project?
+Plese check our [Guidelines](/CONTRIBUTING.md) and [Code of Conduct](/CODE_OF_CONDUCT.md) to contribute to our project.
 
 ## Model Cards
 The model cards for each model variant are available in their respective HuggingFace repository. Please visit our collection [here](https://huggingface.co/collections/ibm-granite/granite-embedding-models-6750b30c802c1926a35550bb).
