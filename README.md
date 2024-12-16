@@ -1,5 +1,9 @@
 ---
 ## Introduction to Granite Embedding Models
+
+- **Huggingface Repository:** [ibm-granite/granite-embedding-models](https://huggingface.co/collections/ibm-granite/granite-embedding-models-6750b30c802c1926a35550bb)
+- **Documentation**: [Granite Docs](https://www.ibm.com/granite/docs/)
+ 
 The Granite Embedding collection delivers innovative sentence-transformer models purpose-built for retrieval-based applications. Featuring a bi-encoder architecture, these models generate high-quality embeddings for textual inputs such as queries, passages, and documents, enabling seamless comparison through cosine similarity. Built using retrieval oriented pretraining, contrastive finetuning, knowledge distillation, and model merging, the Granite Embedding lineup is optimized to ensure strong alignment between query and passage embeddings. 
 
 Built on a foundation of carefully curated, permissibly licensed public datasets, the Granite Embedding models set a high standard for performance, maintaining competitive scores not only on academic benchmarks such as BEIR, but also out-perfoming models of the same size on many enterprise use cases. Developed to meet enterprise-grade expectations, they are crafted transparently in accordance with IBM's AI Ethics principles and offered under the Apache 2.0 license for both research and commercial innovation. 
@@ -131,6 +135,62 @@ with torch.no_grad():
 
 # normalize the embeddings
 query_embeddings = torch.nn.functional.normalize(query_embeddings, dim=1)
+
+```
+**Usage for for Retrieval with Langchain:** 
+The models can be used for Retrieval with IBM Langchain. 
+
+First, install the langchain dependencies
+```shell
+pip install git+https://github.com/ibm-granite-community/utils \
+#     "langchain_community<0.3.0" \
+#     langchain-huggingface \
+#     langchain-milvus \
+#     replicate \
+#     wget
+```
+The below recipe, with granite-embedding-30m-english model, shows how to:
+- Setup an database: setup a local Milvus VectorDB, process the corpus to produce documents, and ingest those documents using an embedding model.
+- Retrieve relevant passages from the database: use an embedding of the query to retrieve semantically similar passages.
+
+```python
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_milvus import Milvus
+from langchain.document_loaders import TextLoader
+from langchain.text_splitter import SentenceTransformersTokenTextSplitter
+import uuid
+import os, wget
+
+#load the embedding model
+embeddings_model = HuggingFaceEmbeddings(model_name="ibm-granite/granite-embedding-30m-english")
+
+#setup the vectordb
+db_file = f"/tmp/milvus_{str(uuid.uuid4())[:8]}.db"
+print(f"The vector database will be saved to {db_file}")
+vector_db = Milvus(embedding_function=embeddings_model, connection_args={"uri": db_file}, auto_id=True)
+
+#load example corpus file
+filename = 'state_of_the_union.txt'
+url = 'https://raw.github.com/IBM/watson-machine-learning-samples/master/cloud/data/foundation_models/state_of_the_union.txt'
+
+if not os.path.isfile(filename):
+  wget.download(url, out=filename)
+
+loader = TextLoader(filename)
+documents = loader.load()
+
+#process the corpus file to produce split documents. 
+text_splitter = SentenceTransformersTokenTextSplitter(tokens_per_chunk=256, chunk_overlap=50, model_name="ibm-granite/granite-embedding-30m-english")
+
+texts = text_splitter.split_documents(documents)
+
+#add processed documents to the vectordb
+vector_db.add_documents(texts)
+
+#search the vectordb with the query
+query = "What did the president say about Ketanji Brown Jackson"
+docs = vector_db.similarity_search(query)
+print(docs[0].page_content)
 
 ```
 
