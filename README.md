@@ -2,7 +2,7 @@
 ## Introduction to Granite Embedding Models
 
 - **Huggingface Repository:** [ibm-granite/granite-embedding-models](https://huggingface.co/collections/ibm-granite/granite-embedding-models-6750b30c802c1926a35550bb)
-- **Documentation**: [Granite Docs](https://www.ibm.com/granite/docs/)
+- **Documentation**: [Granite Docs](https://www.ibm.com/granite/docs/models/embedding/)
 - **Granite Community**: [ibm-granite-community](https://github.com/ibm-granite-community)
  
 The Granite Embedding collection delivers innovative sentence-transformer models purpose-built for retrieval-based applications. Featuring a bi-encoder architecture, these models generate high-quality embeddings for textual inputs such as queries, passages, and documents, enabling seamless comparison through cosine similarity. Built using retrieval oriented pretraining, contrastive finetuning, knowledge distillation, and model merging, the Granite Embedding lineup is optimized to ensure strong alignment between query and passage embeddings. 
