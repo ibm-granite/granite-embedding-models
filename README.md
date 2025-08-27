@@ -9,62 +9,40 @@ The Granite Embedding collection delivers innovative sentence-transformer models
 
 Built on a foundation of carefully curated, permissibly licensed public datasets, the Granite Embedding models set a high standard for performance, maintaining competitive scores not only on academic benchmarks such as BEIR, but also out-perfoming models of the same size on many enterprise use cases. Developed to meet enterprise-grade expectations, they are crafted transparently in accordance with IBM's AI Ethics principles and offered under the Apache 2.0 license for both research and commercial innovation. 
 
-The Granite Embedding lineup includes four different models of varying sizes:
-- granite-embedding-30m-english: English only model that produces embedding vectors of size 384. 
-- granite-embedding-125m-english: English only model that produces embedding vectors of size 768. 
-- granite-embedding-107m-multilingual: Multilingual model that produces embedding vectors of size 384. 
-- granite-embedding-278m-multilingual: Multilingual model that produces embedding vectors of size 768. 
+Developed to replace the very popular [r1 english models](README_r1.md), r2 models show strong performance across standard and IBM-built information retrieval benchmarks (BEIR, ClapNQ), 
+code retrieval (COIR), long-document search benchmarks (MLDR, LongEmbed), conversational multi-turn (MTRAG), 
+table retrieval (NQTables, OTT-QA, AIT-QA, MultiHierTT, OpenWikiTables), and on many enterprise use cases.
 
-Accordingly, these options provide a range of models with different compute requirements to choose from, with appropriate trade-offs with their performance on downstream tasks.
+These models use a bi-encoder architecture to generate high-quality embeddings from text inputs such as queries, passages, and documents, enabling seamless comparison through cosine similarity. Built using retrieval oriented pretraining, contrastive finetuning, knowledge distillation, and model merging, granite-embedding-english-r2 is optimized to ensure strong alignment between query and passage embeddings.
 
-## Data Collection
-Granite embedding models are trained using data from of four key sources: (1) unsupervised title-body paired data scraped from the web, (2) publicly available paired with permissive, enterprise-friendly license, (3) IBM-internal paired data targeting specific technical domains, and (4) IBM-generated synthetic data. Notably, we do not use the popular MS-MARCO retrieval dataset in our training corpus due to its non-commercial license, while other open-source models train on this dataset due to its high quality. 
+The latest granite embedding r2 release introduces two English embedding models, both based on the ModernBERT architecture:
+- [granite-embedding-english-r2](https://huggingface.co/ibm-granite/granite-embedding-english-r2) (**149M** parameters): with an output embedding size of _768_, replacing _granite-embedding-125m-english_. 
+- [granite-embedding-small-english](https://huggingface.co/ibm-granite/granite-embedding-small-english-r2) (**47M** parameters): A _first-of-its-kind_ reduced-size model, with fewer layers and a smaller output embedding size (_384_), replacing _granite-embedding-30m-english_. 
 
-For governance, all our data undergoes a data clearance process subject to technical, business, and governance review. This comprehensive process captures critical information about the data, including but not limited to their content description ownership, intended use, data classification, licensing information, usage restrictions, how the data will be acquired, as well as an assessment of sensitive information (i.e, personal information). 
+## Model Details
 
-## Evaluation Results
-The performance of the Granite Embedding English models on MTEB Retrieval (i.e., BEIR) and code retrieval (CoIR) benchmarks is reported below. The average time required to encode and retrieve per query is also reported. granite-embedding-30m-english is twice as fast as other models with similar embedding dimensions, while maintaining competitive performance.
+- **Developed by:** Granite Embedding Team, IBM
+- **Repository:** [ibm-granite/granite-embedding-models](https://github.com/ibm-granite/granite-embedding-models)
+- **Paper:** [Techincal Report](papers/GraniteEmbeddingR2.pdf)
+- **Language(s) (NLP):** English
+- **Release Date**: Aug 15, 2025
+- **License:** [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
-| Model                           | Paramters (M)| Embedding Dimension |  MTEB Retrieval (15) |  CoIR (10) | Retrieval Time (seconds/query)|
-|---------------------------------|:------------:|:-------------------:|:-------------------: |:----------:|:-----------------------------:|
-|granite-embedding-30m-english    |30            |384                  |49.1                  |47.0        | 0.16                          |
-|granite-embedding-125m-english   |125           |768                  |52.3                  |50.3        | 0.64                          |
+## Usage
 
-The average performance of the Granite Embedding Multilingual models on Multilingual Miracl (across 18 langauges), Mintaka Retrieval (across 8 languages) and MTEB Retrieval for English (across 15 tasks), German (across 4 tasks), Spanish (across 2 tasks), Frenc (across 5 tasks), Japanese (across 2 tasks), Arabic (1 task), Korean (1 task) and Chinese (across 8 tasks) is reported below. The average time required to encode and retrieve per query is also reported. 
+**Intended Use:** The model is designed to produce fixed length vector representations for a given text, which can be used for text similarity, retrieval, and search applications.
 
-| Model                              | Paramters (M)| Embedding Dimension | Miracl (18)   |  Mintaka Retrieval (8) | MTEB English (15) | MTEB German (4) |MTEB Spanish (2) | MTEB French (5) | MTEB Japanese (2) |  MTEB Arabic (1) | MTEB Korean (1) | MTEB Chinese (8) | Retrieval Time (seconds/query)|
-|------------------------------------|:------------:|:-------------------:|:-------------:| :---------------------:|:-----------------:|:---------------:|:---------------:|:---------------:|:----------------:|:----------------:|----------------:|-----------------:|------------------------------:|
-|granite-embedding-107m-multilingual | 107 | 384 | 55.9 | 22.6 | 45.3 | 70.3 | 48.7 | 51.1 | 59.0 | 63.2 | 70.5 | 40.8 | 0.17|
-|granite-embedding-278M-multilingual | 278 | 768 | 58.3 | 23.2 | 48.2 | 71.2 | 52.6 | 54.1 | 61.7 | 64.2 | 71.8 | 45.2 | 0.67|
+For efficient decoding, these models use Flash Attention 2. Installing it is optional, but can lead to faster inference.
 
+```shell
+pip install flash_attn==2.6.1
+```
 
+<!-- Address questions around how the model is intended to be used, including the foreseeable users of the model and those affected by the model. -->
 
-
-**Model Architecture:**
-Granite-Embedding-125m-English is based on an encoder-only RoBERTa like transformer architecture, trained internally at IBM Research.
-
-| Model                     | granite-embedding-30m-english | granite-embedding-125m-english    | granite-embedding-107m-multilingual | granite-embedding-278m-multilingual |
-| :---------                | :-------:|:--------:| :-----:| :-----:|
-| Embedding size            | 384  | 768          | 384    | 768    |
-| Number of layers          | 6    | 12           | 6      | 12     |
-| Number of attention heads | 12   | 12           | 12     | 12     |
-| Intermediate size         | 1536 | 3072         | 1536   | 3072   |
-| Activation Function       | GeLU | GeLU         | GeLU   | GeLU   |
-| Vocabulary Size           | 50265| 50265        | 250002 | 250002 |
-| Max. Sequence Length      | 512  | 512          | 512    | 512    |
-| # Parameters              | 30M  | 125M         | 107M   | 278M   |
-
-
-## How to Use our Models?
-To use any of our models, pick an appropriate `model_path` from:
-1. `ibm-granite/granite-embedding-30m-english`
-2. `ibm-granite/granite-embedding-125m-english`
-3. `ibm-granite/granite-embedding-107m-multilingual`
-4. `ibm-granite/granite-embedding-278m-multilingual`
-
-### Inference
 **Usage with Sentence Transformers:** 
-This is a simple example of how to use granite-embedding-30m-english model with sentence_transformers.
+
+The model is compatible with SentenceTransformer library and is very easy to use:
 
 First, install the sentence transformers library
 ```shell
@@ -76,7 +54,7 @@ The model can then be used to encode pairs of text and find the similarity betwe
 ```python
 from sentence_transformers import SentenceTransformer, util
 
-model_path = "ibm-granite/granite-embedding-30m-english"
+model_path = "ibm-granite/granite-embedding-english-r2"
 # Load the Sentence Transformer model
 model = SentenceTransformer(model_path)
 
@@ -90,7 +68,7 @@ input_passages = [
     "Definition of summit for English Language Learners. : 1 the highest point of a mountain : the top of a mountain. : 2 the highest level. : 3 a meeting or series of meetings between the leaders of two or more governments."
     ]
 
-# encode queries and passages
+# encode queries and passages. The model produces unnormalized vectors. If your task requires normalized embeddings pass normalize_embeddings=True to encode as below.
 query_embeddings = model.encode(input_queries)
 passage_embeddings = model.encode(input_passages)
 
@@ -99,7 +77,8 @@ print(util.cos_sim(query_embeddings, passage_embeddings))
 ```
 
 **Usage with Huggingface Transformers:** 
-This is a simple example of how to use the granite-embedding-30m-english model with the Transformers library and PyTorch.
+
+This is a simple example of how to use the granite-embedding-english-r2 model with the Transformers library and PyTorch.
 
 First, install the required libraries
 ```shell
@@ -112,7 +91,7 @@ The model can then be used to encode pairs of text
 import torch
 from transformers import AutoModel, AutoTokenizer
 
-model_path = "ibm-granite/granite-embedding-30m-english"
+model_path = "ibm-granite/granite-embedding-english-r2"
 
 # Load the model and tokenizer
 model = AutoModel.from_pretrained(model_path)
@@ -131,96 +110,88 @@ tokenized_queries = tokenizer(input_queries, padding=True, truncation=True, retu
 with torch.no_grad():
     # Queries
     model_output = model(**tokenized_queries)
-    # Perform pooling. granite-embedding-30m-english uses CLS Pooling
+    # Perform pooling. granite-embedding-278m-multilingual uses CLS Pooling
     query_embeddings = model_output[0][:, 0]
 
 # normalize the embeddings
 query_embeddings = torch.nn.functional.normalize(query_embeddings, dim=1)
 
 ```
-**Usage for for Retrieval with Langchain:** 
-The models can be used for Retrieval with IBM Langchain. 
 
-First, install the langchain dependencies
-```shell
-pip install git+https://github.com/ibm-granite-community/utils \
-#     "langchain_community<0.3.0" \
-#     langchain-huggingface \
-#     langchain-milvus \
-#     replicate \
-#     wget
-```
-The below recipe, with granite-embedding-30m-english model, shows how to:
-- Setup an database: setup a local Milvus VectorDB, process the corpus to produce documents, and ingest those documents using an embedding model.
-- Retrieve relevant passages from the database: use an embedding of the query to retrieve semantically similar passages.
+## Evaluation Results
+Granite embedding r2 models show a strong performance across tasks diverse tasks. 
 
-```python
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_milvus import Milvus
-from langchain.document_loaders import TextLoader
-from langchain.text_splitter import SentenceTransformersTokenTextSplitter
-import uuid
-import os, wget
+Performance of the granite models on MTEB Retrieval (i.e., BEIR), MTEB-v2, code retrieval (CoIR), long-document search benchmarks (MLDR, LongEmbed), conversational multi-turn (MTRAG), 
+table retrieval (NQTables, OTT-QA, AIT-QA, MultiHierTT, OpenWikiTables),  benchmarks is reported in the below tables. 
 
-#load the embedding model
-embeddings_model = HuggingFaceEmbeddings(model_name="ibm-granite/granite-embedding-30m-english")
+The r2 models demonstrates speed and efficiency, while mainintaining competitive performance. The average speed to encode documents on a single H100 GPU using a sliding window with 512 context length chunks is also reported. 
 
-#setup the vectordb
-db_file = f"/tmp/milvus_{str(uuid.uuid4())[:8]}.db"
-print(f"The vector database will be saved to {db_file}")
-vector_db = Milvus(embedding_function=embeddings_model, connection_args={"uri": db_file}, auto_id=True)
+| Model                              | Parameters (M) | Embedding Size | BEIR Retrieval (15) | MTEB-v2 (41)| CoIR (10) | MLDR (En) | MTRAG (4) |  Encoding Speed (docs/sec) |
+|------------------------------------|:--------------:|:--------------:|:-------------------:|:-----------:|:---------:|:---------:|:---------:|:-------------------------------:|
+| granite-embedding-125m-english     |      125       |      768       |        52.3         |     62.1   |   50.3    |   35.0    |   49.4   |               149             |
+| granite-embedding-30m-english      |       30       |      384       |        49.1         |     60.2   |   47.0    |   32.6    |   48.6   |               198             |
+| granite-embedding-english-r2       |      149       |      768       |        53.1         |     62.8   |   55.3    |   40.7    |   56.7   |               144              |
+| granite-embedding-small-english-r2 |       47       |      384       |        50.9         |     61.1   |   53.8    |   39.8    |   48.1   |               199             |
 
-#load example corpus file
-filename = 'state_of_the_union.txt'
-url = 'https://raw.github.com/IBM/watson-machine-learning-samples/master/cloud/data/foundation_models/state_of_the_union.txt'
 
-if not os.path.isfile(filename):
-  wget.download(url, out=filename)
+|Model                              | Parameters (M) | Embedding Size |**AVERAGE**|MTEB-v2 Retrieval (10) | CoIR (10) | MLDR (En) | LongEmbed (6)| Table IR (5)| MTRAG(4) |  Encoding Speed (docs/sec) |
+|-----------------------------------|:--------------:|:--------------:|:---------:|:---------------------:|:---------:|:---------:|:------------:|:-----------:|:--------:|-------------------------------:|
+|e5-base-v2                         |109|768|47.5|49.7|50.3|32.5|41.1|74.09|37.0| 115|
+|bge-base-en-v1.5                   |109|768|46.9|54.8|46.6|33.5|33.9|73.98|38.8| 116|
+|snowflake-arctic-embed-m-v2.0      |305|768|51.4|58.4|52.2|32.4|55.4|80.75|29.2| 106|
+|gte-base-en-v1.5                   |137|768|52.8|55.5|42.4|42.7|59.4|80.52|36.0| 116|
+|gte-modernbert-base                |149|768|57.5|57.0|71.5|46.2|57.0|76.68|36.8| 142|
+|nomic-ai/modernbert-embed-base     |149|768|48.0|48.7|48.8|31.3|56.3|66.69|36.2| 141|
+|||||||||||
+|granite-embedding-english-r2       |149|768|**59.5**|56.4|54.8|41.6|67.8|78.53|57.6| 144|
+|granite-embedding-small-english-r2 | 47|384|55.6|53.9|53.4|40.1|61.9|75.51|48.9|199|
 
-loader = TextLoader(filename)
-documents = loader.load()
 
-#process the corpus file to produce split documents. 
-text_splitter = SentenceTransformersTokenTextSplitter(tokens_per_chunk=256, chunk_overlap=50, model_name="ibm-granite/granite-embedding-30m-english")
+### Model Architecture and Key Features
 
-texts = text_splitter.split_documents(documents)
+The latest granite embedding r2 release introduces two English embedding models, both based on the ModernBERT architecture:
+- _granite-embedding-english-r2_ (**149M** parameters): with an output embedding size of _768_, replacing _granite-embedding-125m-english_. 
+- _granite-embedding-small-english-r2_ (**47M** parameters): A _first-of-its-kind_ reduced-size model, with fewer layers and a smaller output embedding size (_384_), replacing _granite-embedding-30m-english_. 
 
-#add processed documents to the vectordb
-vector_db.add_documents(texts)
+The following table shows the structure of the two models:
 
-#search the vectordb with the query
-query = "What did the president say about Ketanji Brown Jackson"
-docs = vector_db.similarity_search(query)
-print(docs[0].page_content)
+| Model                     | granite-embedding-small-english-r2 | **granite-embedding-english-r2**   |
+| :---------                | :-------:|:--------:| 
+| Embedding size            | 384      | **768**      | 
+| Number of layers          | 12       | **22**       | 
+| Number of attention heads | 12       | **12**       | 
+| Intermediate size         | 1536     | **1152**     | 
+| Activation Function       | GeGLU    | **GeGLU**    | 
+| Vocabulary Size           | 50368    | **50368**    | 
+| Max. Sequence Length      | 8192     | **8192**     | 
+| # Parameters              | 47M      | **149M**     | 
 
-```
 
-## How to Download our Models?
-The model of choice (granite-embedding-30m-english in this example) can be cloned using:
-```shell
-git clone https://huggingface.co/ibm-granite/granite-embedding-30m-english
-```
-## How to Contribute to this Project?
-Plese check our [Guidelines](/CONTRIBUTING.md) and [Code of Conduct](/CODE_OF_CONDUCT.md) to contribute to our project.
+### Training and Optimization
 
-## Model Cards
-The model cards for each model variant are available in their respective HuggingFace repository. Please visit our collection [here](https://huggingface.co/collections/ibm-granite/granite-embedding-models-6750b30c802c1926a35550bb).
+The granite embedding r2 models incorporate key enhancements from the ModernBERT architecture, including: 
+- Alternating attention lengths to accelerate processing 
+- Rotary position embeddings for extended sequence length 
+- A newly trained tokenizer optimized with code and text data 
+- Flash Attention 2.0 for improved efficiency 
+- Streamlined parameters, eliminating unnecessary bias terms
 
-## License 
-All Granite Embedding Models are distributed under [Apache 2.0](./LICENSE) license.
 
-## Would you like to provide feedback?
-Please let us know your comments about our family of embedding models by visiting our [collection](https://huggingface.co/collections/ibm-granite/granite-embedding-models-6750b30c802c1926a35550bb). Select the repository of the model you would like to provide feedback about. Then, go to *Community* tab, and click on *New discussion*. Alternatively, you can also post any questions/comments on our [github discussions page](https://github.com/orgs/ibm-granite/discussions).
+## Data Collection
+Granite embedding r2 models are trained using data from four key sources: 
+1. Unsupervised title-body paired data scraped from the web
+2. Publicly available paired with permissive, enterprise-friendly license
+3. IBM-internal paired data targetting specific technical domains
+4. IBM-generated synthetic data
 
-## Citation
-If you find granite models useful, please cite:
+Notably, we _do not use_ the popular MS-MARCO retrieval dataset in our training corpus due to its non-commercial license (many open-source models use this dataset due to its high quality). 
 
-```
-@misc{granite2024embedding,
-  title={Granite Embedding Models},
-  url={https://github.com/ibm-granite/granite-embedding-models/},
-  author={Granite Embedding Team, IBM},
-  month={December},
-  year={2024}
-}
-```
+The underlying encoder models using GneissWeb, an IBM-curated dataset composed exclusively of open, commercial-friendly sources.
+
+For governance, all our data undergoes a data clearance process subject to technical, business, and governance review. This comprehensive process captures critical information about the data, including but not limited to their content description ownership, intended use, data classification, licensing information, usage restrictions, how the data will be acquired, as well as an assessment of sensitive information (i.e, personal information). 
+
+## Infrastructure
+We trained the granite embedding english r2 models using IBM's computing cluster, BlueVela Cluster, which is outfitted with NVIDIA H100 80GB GPUs. This cluster provides a scalable and efficient infrastructure for training our models over multiple GPUs.
+
+## Ethical Considerations and Limitations
+Granite-embedding-english-r2 leverages both permissively licensed open-source and select proprietary data for enhanced performance. The training data for the base language model was filtered to remove text containing hate, abuse, and profanity. Granite-embedding-english-r2 is trained only for English texts, and has a context length of 8192 tokens (longer texts will be truncated to this size).
