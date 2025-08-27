@@ -3,6 +3,7 @@
 
 - **Huggingface Repository:** [ibm-granite/granite-embedding-models](https://huggingface.co/collections/ibm-granite/granite-embedding-models-6750b30c802c1926a35550bb)
 - **Documentation**: [Granite Docs](https://www.ibm.com/granite/docs/models/embedding/)
+- - **Paper:** Coming Soon
 - **Granite Community**: [ibm-granite-community](https://github.com/ibm-granite-community)
  
 The Granite Embedding collection delivers innovative sentence-transformer models purpose-built for retrieval-based applications. Featuring a bi-encoder architecture, these models generate high-quality embeddings for textual inputs such as queries, passages, and documents, enabling seamless comparison through cosine similarity. Built using retrieval oriented pretraining, contrastive finetuning, knowledge distillation, and model merging, the Granite Embedding lineup is optimized to ensure strong alignment between query and passage embeddings. 
@@ -14,7 +15,8 @@ The Granite Embedding lineup includes four different models of varying sizes:
 - [granite-embedding-125m-english](https://huggingface.co/ibm-granite/granite-embedding-125m-english): English only model that produces embedding vectors of size 768. 
 - [granite-embedding-107m-multilingual](https://huggingface.co/ibm-granite/granite-embedding-107m-multilingual): Multilingual model that produces embedding vectors of size 384. 
 - [granite-embedding-278m-multilingual](https://huggingface.co/ibm-granite/granite-embedding-278m-multilingual): Multilingual model that produces embedding vectors of size 768. 
-
+- [granite-embedding-30m-sparse](https://huggingface.co/ibm-granite/granite-embedding-30m-sparse): English only sparse model that produces variable length bag-of-word like dictionary, containing expansions of sentence tokens and their corresponding weights.
+  
 Accordingly, these options provide a range of models with different compute requirements to choose from, with appropriate trade-offs with their performance on downstream tasks.
 
 ## Data Collection
@@ -37,7 +39,14 @@ The average performance of the Granite Embedding Multilingual models on Multilin
 |granite-embedding-107m-multilingual | 107 | 384 | 55.9 | 22.6 | 45.3 | 70.3 | 48.7 | 51.1 | 59.0 | 63.2 | 70.5 | 40.8 | 0.17|
 |granite-embedding-278M-multilingual | 278 | 768 | 58.3 | 23.2 | 48.2 | 71.2 | 52.6 | 54.1 | 61.7 | 64.2 | 71.8 | 45.2 | 0.67|
 
+Granite-Embedding-30m-Sparse is competive in performance to the naver/splade-v3-distilbert despite being half the parameter size. We also compare the sparse model with similar sized dense embedding counterpart `ibm-granite/granite-embedding-30m-english`. The performance of the models on MTEB Retrieval (i.e., BEIR) is reported below. 
+To maintain consistency with results reported by `naver/splade-v3-distilbert`, we do not include CQADupstack and MS-MARCO in the table below.
 
+| Model                           | Paramters (M)| Vocab Size |  BEIR Retrieval (13) |
+|---------------------------------|:------------:|:-------------------:|:-------------------: |
+|naver/splade-v3-distilbert   |67            |30522                  |50.0                 |
+|granite-embedding-30m-english    |30            |50265                  |50.6                 |
+|granite-embedding-30m-sparse    |30            |50265                  |50.8                 |
 
 
 **Model Architecture:**
@@ -62,7 +71,8 @@ To use any of our models, pick an appropriate `model_path` from:
 3. `ibm-granite/granite-embedding-107m-multilingual`
 4. `ibm-granite/granite-embedding-278m-multilingual`
 
-### Inference
+### Inference with Dense Retrivers
+
 **Usage with Sentence Transformers:** 
 This is a simple example of how to use granite-embedding-30m-english model with sentence_transformers.
 
@@ -195,6 +205,148 @@ print(docs[0].page_content)
 
 ```
 
+### Inference with Sparse Retriever 
+The model is designed to produce variable length bag-of-word like dictionary, containing expansions of sentence tokens and their corresponding weights, for a given text, which can be used for text similarity, retrieval, and search applications.
+
+**Usage with Milvus:** 
+The model is compatible with Milvus Vector DB and is very easy to use:
+First, install the pymilvus library
+```shell
+pip install pymilvus[model]
+```
+
+The model can then be used to encode pairs of text and find the similarity between their representations
+
+```python
+
+from pymilvus import model
+from pymilvus import MilvusClient, DataType
+
+client = MilvusClient("./milvus_demo.db")
+
+client.drop_collection(collection_name="my_sparse_collection")
+
+schema = client.create_schema(
+    auto_id=True,
+    enable_dynamic_fields=True,
+)
+
+schema.add_field(field_name="pk", datatype=DataType.VARCHAR, is_primary=True, max_length=100)
+schema.add_field(field_name="id", datatype=DataType.VARCHAR, is_primary=False, max_length=100)
+schema.add_field(field_name="embeddings", datatype=DataType.SPARSE_FLOAT_VECTOR)
+
+index_params = client.prepare_index_params()
+
+index_params.add_index(field_name="embeddings",
+                               index_name="sparse_inverted_index",
+                               index_type="SPARSE_INVERTED_INDEX",
+                               metric_type="IP",
+                               params={"drop_ratio_build": 0.2})
+client.create_collection(
+    collection_name="my_sparse_collection",
+    schema=schema,
+    index_params=index_params
+)
+
+embeddings_model = model.sparse.SpladeEmbeddingFunction(
+    model_name="ibm-granite/granite-embedding-30m-sparse", 
+    device="cpu",
+    batch_size=2,
+    k_tokens_query=50,
+    k_tokens_document=192
+)
+
+# Prepare documents to be ingested
+docs = [
+    "Artificial intelligence was founded as an academic discipline in 1956.",
+    "Alan Turing was the first person to conduct substantial research in AI.",
+    "Born in Maida Vale, London, Turing was raised in southern England.",
+]
+
+# SpladeEmbeddingFunction.encode_documents returns sparse matrix or sparse array depending
+# on the milvus-model version. reshape(1,-1) ensures the format is correct for ingestion.
+doc_vector = [{"embeddings": doc_emb.reshape(1,-1), "id": f"item_{i}"} for i, doc_emb in enumerate(embeddings_model.encode_documents(docs))]
+
+
+client.insert(
+    collection_name="my_sparse_collection",
+    data=doc_vector
+)
+
+# Prepare search parameters
+search_params = {
+    "params": {"drop_ratio_search": 0.2},  # Additional optional search parameters
+}
+
+# Prepare the query vector
+
+queries = [
+      "When was artificial intelligence founded", 
+      "Where was Turing born?"
+]
+query_vector = embeddings_model.encode_documents(queries)
+
+res = client.search(
+    collection_name="my_sparse_collection",
+    data=query_vector,
+    limit=1, #top k documents to return
+    output_fields=["id"],
+    search_params=search_params,
+)
+
+for r in res:
+    print(r)
+
+```
+
+**Usage with Sentence Transformers:** 
+
+First install the Sentence Transformers library:
+
+```bash
+pip install -U sentence-transformers
+```
+
+Then you can load this model and run inference.
+```python
+
+from sentence_transformers import SparseEncoder
+
+# Download from the 🤗 Hub
+model = SparseEncoder("ibm-granite/granite-embedding-30m-sparse")
+
+# Run inference
+docs = [
+    "Artificial intelligence was founded as an academic discipline in 1956.",
+    "Alan Turing was the first person to conduct substantial research in AI.",
+    "Born in Maida Vale, London, Turing was raised in southern England.",
+]
+docs_embeddings = model.encode_document(docs, max_active_dims=192)
+print(docs_embeddings.shape)
+# [3, 50265]
+
+queries = ["When was artificial intelligence founded", "Where was Turing born?"]
+queries_embeddings = model.encode_query(queries, max_active_dims=50)
+print(queries_embeddings.shape)
+# [2, 50265]
+
+# Get the similarity scores for the embeddings
+similarities = model.similarity(queries_embeddings, docs_embeddings)
+print(similarities.shape)
+# [2, 3]
+
+for i, query in enumerate(queries):
+    best_doc_index = similarities[i].argmax().item()
+
+    print(f"Query: {query}")
+    print(f"Best doc associate: Similarity: {similarities[i][best_doc_index]:.4f}, Doc: {docs[best_doc_index]}")
+    intersection = model.intersection(queries_embeddings[i], docs_embeddings[best_doc_index])
+    decoded_intersection = model.decode(intersection, top_k=10)
+    print("Top 10 tokens influencing the similarity:")
+    for token, score in decoded_intersection:
+        print(f"Token: {token}, Score: {score:.4f}")
+```
+
 ## How to Download our Models?
 The model of choice (granite-embedding-30m-english in this example) can be cloned using:
 ```shell
@@ -216,11 +368,13 @@ Please let us know your comments about our family of embedding models by visitin
 If you find granite models useful, please cite:
 
 ```
-@misc{granite2024embedding,
-  title={Granite Embedding Models},
-  url={https://github.com/ibm-granite/granite-embedding-models/},
-  author={Granite Embedding Team, IBM},
-  month={December},
-  year={2024}
+@misc{awasthy2025graniteembeddingmodels,
+      title={Granite Embedding Models}, 
+      author={Parul Awasthy and Aashka Trivedi and Yulong Li and Mihaela Bornea and David Cox and Abraham Daniels and Martin Franz and Gabe Goodhart and Bhavani Iyer and Vishwajeet Kumar and Luis Lastras and Scott McCarley and Rudra Murthy and Vignesh P and Sara Rosenthal and Salim Roukos and Jaydeep Sen and Sukriti Sharma and Avirup Sil and Kate Soule and Arafat Sultan and Radu Florian},
+      year={2025},
+      eprint={2502.20204},
+      archivePrefix={arXiv},
+      primaryClass={cs.IR},
+      url={https://arxiv.org/abs/2502.20204}, 
 }
 ```
