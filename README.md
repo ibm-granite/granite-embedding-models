@@ -119,12 +119,14 @@ query_embeddings = torch.nn.functional.normalize(query_embeddings, dim=1)
 ```
 
 ## Evaluation Results
-Granite embedding r2 models show a strong performance across tasks diverse tasks. 
+Granite embedding r2 models show strong performance across diverse tasks. The r2 models demonstrate speed and efficiency while maintaining competitive performance.
 
-Performance of the granite models on MTEB Retrieval (i.e., BEIR), MTEB-v2, code retrieval (CoIR), long-document search benchmarks (MLDR, LongEmbed), conversational multi-turn (MTRAG), 
-table retrieval (NQTables, OTT-QA, AIT-QA, MultiHierTT, OpenWikiTables),  benchmarks is reported in the below tables. 
+### English Evaluation Results
 
-The r2 models demonstrates speed and efficiency, while mainintaining competitive performance. The average speed to encode documents on a single H100 GPU using a sliding window with 512 context length chunks is also reported. 
+Performance of the granite English models on MTEB Retrieval (i.e., BEIR), MTEB-v2, code retrieval (CoIR), long-document search benchmarks (MLDR, LongEmbed), conversational multi-turn (MTRAG),
+table retrieval (NQTables, OTT-QA, AIT-QA, MultiHierTT, OpenWikiTables) benchmarks is reported in the below tables.
+
+The average speed to encode documents on a single H100 GPU using a sliding window with 512 context length chunks is also reported.
 
 | Model                              | Parameters (M) | Embedding Size | BEIR Retrieval (15) | MTEB-v2 (41)| CoIR (10) | MLDR (En) | MTRAG (4) |  Encoding Speed (docs/sec) |
 |------------------------------------|:--------------:|:--------------:|:-------------------:|:-----------:|:---------:|:---------:|:---------:|:-------------------------------:|
@@ -145,6 +147,68 @@ The r2 models demonstrates speed and efficiency, while mainintaining competitive
 |||||||||||
 |granite-embedding-english-r2       |149|768|**59.5**|56.4|54.8|41.6|67.8|78.53|57.6| 144|
 |granite-embedding-small-english-r2 | 47|384|55.6|53.9|53.4|40.1|61.9|75.51|48.9|199|
+
+### Multilingual Evaluation Results
+
+Performance across the main multilingual benchmark suite. Scores are averages across tasks within each benchmark (higher is better):
+
+| Model | Params | Embed Dim | MTEB Multilingual Retrieval (18) | Code (12) | English Retrieval (10) | LongEmbed (6) | RaR-b (17) |
+|---|---|---|---|---|---|---|---|
+| multilingual-e5-small | 96M | 384 | 50.9 | 51.3 | 46.5 | 38.8 | 20.3 |
+| **granite-embedding-97m-multilingual-r2** | **97M** | **384** | **59.6** | **60.5** | **50.1** | **65.6** | **24.9** |
+| granite-embedding-107m-multilingual (R1) | 107M | 384 | 48.1 | 40.7 | 47.9 | 34.3 | 17.1 |
+| jina-embeddings-v5-text-nano | 239M | 768 | 63.3 | 71.2 | 58.8 | 63.6 | 25.2 |
+| harrier-oss-v1-270m | 270M | 640 | 66.4 | 62.4 | 52.1 | 65.0 | 32.9 |
+| multilingual-e5-base | 278M | 768 | 52.7 | 52.6 | 49.0 | 40.5 | 23.4 |
+| granite-embedding-278m-multilingual (R1) | 278M | 768 | 52.2 | 48.5 | 51.5 | 37.7 | 18.9 |
+| embeddinggemma-300m | 300M | 768 | 62.5 | 69.0 | 54.6 | 55.4 | 26.1 |
+| gte-multilingual-base | 305M | 768 | 57.2 | 57.5 | 50.8 | 62.1 | 19.0 |
+| snowflake-arctic-embed-m-v2.0 | 305M | 768 | 54.8 | 55.2 | 58.4 | 55.4 | 23.3 |
+| **granite-embedding-311m-multilingual-r2** | **311M** | **768** | **64.0** | **63.9** | **52.6** | **71.7** | **28.0** |
+
+#### Multilingual Speed and Throughput
+
+Encoding speed measured on a single NVIDIA H100 GPU using 512-token chunks:
+
+| Model | Latency (s/query) | Throughput (docs/s) | MTEB Multilingual Retrieval |
+|---|---:|---:|---:|
+| **granite-embedding-97m-multilingual-r2** | 0.35 | 2,894 | 59.6 |
+| **granite-embedding-311m-multilingual-r2** | 0.52 | 1,944 | 64.0 |
+| granite-embedding-107m-multilingual (R1) | 0.30 | 3,337 | 48.1 |
+| granite-embedding-278m-multilingual (R1) | 0.46 | 2,185 | 52.2 |
+| harrier-oss-v1-270m | 0.49 | 2,060 | 66.4 |
+| jina-embeddings-v5-text-nano | 3.34 | 302 | 63.3 |
+| embeddinggemma-300m | 0.86 | 1,172 | 62.5 |
+| gte-multilingual-base | 1.01 | 1,034 | 57.2 |
+| multilingual-e5-base | 0.47 | 2,170 | 52.7 |
+| multilingual-e5-small | 0.34 | 2,955 | 50.9 |
+| snowflake-arctic-embed-m-v2.0 | 1.05 | 962 | 54.8 |
+
+#### Cross-lingual Retrieval
+
+Average performance on cross-lingual tasks within MTEB Retrieval:
+
+| Model | Belebele Retrieval | MLQA Retrieval |
+|---|---|---|
+| granite-embedding-107m-multilingual (R1) | 55.1 | 60.5 |
+| granite-embedding-97m-multilingual-r2 | 52.9 | 49.9 |
+| granite-embedding-278m-multilingual (R1) | 62.2 | 63.0 |
+| granite-embedding-311m-multilingual-r2 | **66.5** | 59.5 |
+
+### Matryoshka Embeddings (311M Multilingual)
+
+The 311M multilingual model supports [Matryoshka Representation Learning](https://arxiv.org/abs/2205.13147), allowing embeddings to be truncated from the full 768 dimensions down to 512, 384, 256, or 128 with graceful quality degradation. This is useful when storage, memory, or similarity-computation cost is a concern.
+
+| Model | Embed Dim | English Retrieval (10) | Code (12) | MTEB Multilingual Retrieval (18) |
+|---|---:|---:|---:|---:|
+| 311M (Matryoshka) | 768 | 52.6 | 63.9 | 63.9 |
+| 311M (Matryoshka) | 512 | 52.5 | 63.8 | 63.9 |
+| 311M (Matryoshka) | 384 | 52.1 | 63.7 | 63.8 |
+| 311M (Matryoshka) | 256 | 51.6 | 63.4 | 63.5 |
+| 311M (Matryoshka) | 128 | 50.4 | 62.3 | 62.5 |
+| *97M (native)* | *384* | *48.9* | *58.3* | *58.0* |
+
+Cutting from 768 to 256 dimensions (a 3x reduction in storage and computation cost) drops MTEB Multilingual Retrieval by just 0.4 points (63.9 to 63.5). Even at 128 dimensions (a 6x reduction), the model retains over 97% of its full-dimension performance.
 
 
 ### Model Architecture and Key Features
