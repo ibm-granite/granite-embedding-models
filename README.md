@@ -23,7 +23,7 @@ The latest granite embedding r2 release introduces two English embedding models,
 
 - **Developed by:** Granite Embedding Team, IBM
 - **Repository:** [ibm-granite/granite-embedding-models](https://github.com/ibm-granite/granite-embedding-models)
-- **Paper:** [Techincal Report](papers/GraniteEmbeddingR2.pdf)
+- **Paper:** [Technical Report](papers/GraniteEmbeddingR2.pdf)
 - **Language(s) (NLP):** English
 - **Release Date**: Aug 15, 2025
 - **License:** [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
