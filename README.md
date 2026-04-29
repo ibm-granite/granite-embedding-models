@@ -15,9 +15,15 @@ table retrieval (NQTables, OTT-QA, AIT-QA, MultiHierTT, OpenWikiTables), and on 
 
 These models use a bi-encoder architecture to generate high-quality embeddings from text inputs such as queries, passages, and documents, enabling seamless comparison through cosine similarity. Built using retrieval oriented pretraining, contrastive finetuning, knowledge distillation, and model merging, granite-embedding-english-r2 is optimized to ensure strong alignment between query and passage embeddings.
 
-The latest granite embedding r2 release introduces two English embedding models, both based on the ModernBERT architecture:
-- [granite-embedding-english-r2](https://huggingface.co/ibm-granite/granite-embedding-english-r2) (**149M** parameters): with an output embedding size of _768_, replacing _granite-embedding-125m-english_. 
-- [granite-embedding-small-english](https://huggingface.co/ibm-granite/granite-embedding-small-english-r2) (**47M** parameters): A _first-of-its-kind_ reduced-size model, with fewer layers and a smaller output embedding size (_384_), replacing _granite-embedding-30m-english_. 
+The Granite Embedding R2 release introduces English and Multilingual models, all based on the ModernBERT architecture:
+
+**English:**
+- [granite-embedding-english-r2](https://huggingface.co/ibm-granite/granite-embedding-english-r2) (**149M** parameters): with an output embedding size of _768_, replacing _granite-embedding-125m-english_.
+- [granite-embedding-small-english-r2](https://huggingface.co/ibm-granite/granite-embedding-small-english-r2) (**47M** parameters): A reduced-size model, with fewer layers and a smaller output embedding size (_384_), replacing _granite-embedding-30m-english_.
+
+**Multilingual:**
+- [granite-embedding-311m-multilingual-r2](https://huggingface.co/ibm-granite/granite-embedding-311m-multilingual-r2) (**311M** parameters): A flagship multilingual model with 768-dimensional embeddings, Matryoshka dimension support, and top-tier multilingual retrieval quality.
+- [granite-embedding-97m-multilingual-r2](https://huggingface.co/ibm-granite/granite-embedding-97m-multilingual-r2) (**97M** parameters): A compact multilingual model with 384-dimensional embeddings supporting 200+ languages with a 32,768-token context window.
 
 ## Model Details
 
@@ -213,22 +219,45 @@ Cutting from 768 to 256 dimensions (a 3x reduction in storage and computation co
 
 ### Model Architecture and Key Features
 
-The latest granite embedding r2 release introduces two English embedding models, both based on the ModernBERT architecture:
-- _granite-embedding-english-r2_ (**149M** parameters): with an output embedding size of _768_, replacing _granite-embedding-125m-english_. 
-- _granite-embedding-small-english-r2_ (**47M** parameters): A _first-of-its-kind_ reduced-size model, with fewer layers and a smaller output embedding size (_384_), replacing _granite-embedding-30m-english_. 
+The Granite Embedding R2 release includes four models based on the ModernBERT architecture:
 
-The following table shows the structure of the two models:
+**English:**
+- _granite-embedding-english-r2_ (**149M** parameters): with an output embedding size of _768_, replacing _granite-embedding-125m-english_.
+- _granite-embedding-small-english-r2_ (**47M** parameters): A reduced-size model, with fewer layers and a smaller output embedding size (_384_), replacing _granite-embedding-30m-english_.
+
+**Multilingual:**
+- _granite-embedding-311m-multilingual-r2_ (**311M** parameters): A flagship multilingual model with 768-dimensional embeddings and Matryoshka dimension support (768/512/384/256/128), supporting 200+ languages with enhanced retrieval for 52 languages and programming code.
+- _granite-embedding-97m-multilingual-r2_ (**97M** parameters): A compact multilingual model with 384-dimensional embeddings — the highest retrieval score for any open multilingual embedding model under 100M parameters.
+
+The following tables show the structure of the models:
+
+**English Models:**
 
 | Model                     | granite-embedding-small-english-r2 | **granite-embedding-english-r2**   |
-| :---------                | :-------:|:--------:| 
-| Embedding size            | 384      | **768**      | 
-| Number of layers          | 12       | **22**       | 
-| Number of attention heads | 12       | **12**       | 
-| Intermediate size         | 1536     | **1152**     | 
-| Activation Function       | GeGLU    | **GeGLU**    | 
-| Vocabulary Size           | 50368    | **50368**    | 
-| Max. Sequence Length      | 8192     | **8192**     | 
-| # Parameters              | 47M      | **149M**     | 
+| :---------                | :-------:|:--------:|
+| Embedding size            | 384      | **768**      |
+| Number of layers          | 12       | **22**       |
+| Number of attention heads | 12       | **12**       |
+| Intermediate size         | 1536     | **1152**     |
+| Activation Function       | GeGLU    | **GeGLU**    |
+| Vocabulary Size           | 50368    | **50368**    |
+| Max. Sequence Length      | 8192     | **8192**     |
+| # Parameters              | 47M      | **149M**     |
+
+**Multilingual Models:**
+
+| Model                     | granite-embedding-97m-multilingual-r2 | **granite-embedding-311m-multilingual-r2** |
+| :---------                | :-------:|:--------:|
+| Embedding size            | 384      | **768**      |
+| Number of layers          | 12       | **22**       |
+| Number of attention heads | 12       | **12**       |
+| Intermediate size         | 1536     | **1152**     |
+| Activation Function       | SiLU     | **GeGLU**    |
+| Vocabulary Size           | 180000   | **262000**   |
+| Max. Sequence Length      | 32768    | **32768**    |
+| Matryoshka Support        | No       | **Yes (768/512/384/256/128)** |
+| Code Languages            | Python, Go, Java, JS, PHP, Ruby, SQL, C, C++ | **Python, Go, Java, JS, PHP, Ruby, SQL, C, C++** |
+| # Parameters              | 97M      | **311M**     |
 
 
 ### Training and Optimization
