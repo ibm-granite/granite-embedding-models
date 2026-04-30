@@ -29,8 +29,8 @@ The Granite Embedding R2 release introduces English and Multilingual models, all
 
 - **Developed by:** Granite Embedding Team, IBM
 - **Repository:** [ibm-granite/granite-embedding-models](https://github.com/ibm-granite/granite-embedding-models)
-- **Paper:** [Techincal Report](papers/GraniteEmbeddingR2.pdf)
-- **Language(s) (NLP):** English (all models), 200+ languages with enhanced retrieval for 52 languages (multilingual models)
+- **Paper:** [Technical Report](papers/GraniteEmbeddingR2.pdf)
+- **Language(s) (NLP):** English
 - **Release Date**: Aug 15, 2025
 - **License:** [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
