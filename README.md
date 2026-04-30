@@ -31,7 +31,8 @@ The Granite Embedding R2 release introduces English and Multilingual models, all
 - **Repository:** [ibm-granite/granite-embedding-models](https://github.com/ibm-granite/granite-embedding-models)
 - **Paper:** [Techincal Report](papers/GraniteEmbeddingR2.pdf)
 - **Language(s) (NLP):** English (all models), 200+ languages with enhanced retrieval for 52 languages (multilingual models)
-- **Release Date**: Aug 15, 2025
+- **Release Date**: Aug 15, 2025 (English) / April 29, 2026 (Multilingual)
+- **Model Size:** 47M & 149M (English) / 97M & 311M (Multilingual)
 - **License:** [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
 ## Usage
