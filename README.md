@@ -43,7 +43,6 @@ For efficient decoding, these models use Flash Attention 2. Installing it is opt
 
 ```shell
 pip install flash_attn
-```use t
 
 <!-- Address questions around how the model is intended to be used, including the foreseeable users of the model and those affected by the model. -->
 
