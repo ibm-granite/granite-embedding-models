@@ -132,33 +132,34 @@ Granite embedding r2 models show strong performance across diverse tasks. The r2
 
 Performance of the Granite English R2 models compared to other models on MTEB-v2 Retrieval, code retrieval (CoIR), long-document search benchmarks (MLDR, LongEmbed), conversational multi-turn (MTRAG), and table retrieval (NQTables, OTT-QA, AIT-QA, MultiHierTT, OpenWikiTables). Encoding speed is measured on a single H100 GPU using 512 context length chunks.
 
-|Model                              | Parameters (M) | Embedding Size |**AVERAGE**|MTEB-v2 Retrieval (10) | CoIR (10) | MLDR (En) | LongEmbed (6)| Table IR (5)| MTRAG(4) |  Encoding Speed (docs/sec) |
+|Model                              | Parameters (M) | Embedding Size |**AVERAGE**|MTEB-v2 Retrieval (10) | CoIR (10) | MLDR (En) | LongEmbed (6)| Table IR (5)| MTRAG(4) |  Throughput (spans/s) |
 |-----------------------------------|:--------------:|:--------------:|:---------:|:---------------------:|:---------:|:---------:|:------------:|:-----------:|:--------:|-------------------------------:|
-|e5-base-v2                         |109|768|47.5|49.7|50.3|32.5|41.1|74.09|37.0| 1,328|
-|bge-base-en-v1.5                   |109|768|46.9|54.8|46.6|33.5|33.9|73.98|38.8| 1,479|
-|snowflake-arctic-embed-m-v2.0      |305|768|51.4|58.4|52.2|32.4|55.4|80.75|29.2| 1,217|
-|gte-base-en-v1.5                   |137|768|52.8|55.5|42.4|42.7|59.4|80.52|36.0| 1,284|
-|gte-modernbert-base                |149|768|57.5|57.0|71.5|46.2|57.0|76.68|36.8| 1,241|
-|nomic-ai/modernbert-embed-base     |149|768|48.0|48.7|48.8|31.3|56.3|66.69|36.2| 1,290|
+|e5-base-v2                         |109|768|47.5|49.7|50.3|32.5|41.1|74.09|37.0| 1,455.16|
+|bge-base-en-v1.5                   |109|768|46.9|54.8|46.6|33.5|33.9|73.98|38.8| 1,730.49|
+|snowflake-arctic-embed-m-v2.0      |305|768|51.4|58.4|52.2|32.4|55.4|80.75|29.2| 2,832.53|
+|gte-base-en-v1.5                   |137|768|52.8|55.5|42.4|42.7|59.4|80.52|36.0| 1,425.52|
+|gte-modernbert-base                |149|768|57.5|57.0|71.5|46.2|57.0|76.68|36.8| 2,157.60|
+|nomic-ai/modernbert-embed-base     |149|768|48.0|48.7|48.8|31.3|56.3|66.69|36.2| 2,332.91|
 |||||||||||
-|**granite-embedding-english-r2**       |149|768|**59.5**|56.4|54.8|41.6|67.8|78.53|57.6| 1,243|
-|**granite-embedding-small-english-r2** | 47|384|55.6|53.9|53.4|40.1|61.9|75.51|48.9| 1,813|
+|**granite-embedding-english-r2**       |149|768|**59.5**|56.4|54.8|41.6|67.8|78.53|57.6| 2,012.53|
+|**granite-embedding-small-english-r2** | 47|384|55.6|53.9|53.4|40.1|61.9|75.51|48.9| 3,298.54|
 
 ### Multilingual Evaluation Results
 
 Performance across the main multilingual benchmark suite. Scores are averages across tasks within each benchmark (higher is better). Encoding speed is measured on a single NVIDIA H100 GPU using 512-token chunks.
 
-| Model | Params | Embed Dim | MTEB Multilingual Retrieval (18) | Code (12) | English Retrieval (10) | LongEmbed (6) | RaR-b (17) | Throughput (docs/s) |
+| Model | Params | Embed Dim | MTEB Multilingual Retrieval (18) | Code (12) | English Retrieval (10) | LongEmbed (6) | RaR-b (17) | Throughput (spans/s) |
 |---|---|---|---|---|---|---|---|---:|
-| multilingual-e5-small | 96M | 384 | 50.9 | 51.3 | 46.5 | 38.8 | 20.3 | 1,021 |
-| **granite-embedding-97m-multilingual-r2** | **97M** | **384** | **59.6** | **60.5** | **50.1** | **65.6** | **24.9** | **1,976** |
-| jina-embeddings-v5-text-nano | 239M | 768 | 63.3 | 71.2 | 58.8 | 63.6 | 25.2 | 264 |
-| harrier-oss-v1-270m | 270M | 640 | 66.4 | 62.4 | 52.1 | 65.0 | 32.9 | 1,684 |
-| multilingual-e5-base | 278M | 768 | 52.7 | 52.6 | 49.0 | 40.5 | 23.4 | 1,125 |
-| embeddinggemma-300m | 300M | 768 | 62.5 | 69.0 | 54.6 | 55.4 | 26.1 | 868 |
-| gte-multilingual-base | 305M | 768 | 57.2 | 57.5 | 50.8 | 62.1 | 19.0 | 1,183 |
-| snowflake-arctic-embed-m-v2.0 | 305M | 768 | 54.8 | 55.2 | 58.4 | 55.4 | 23.3 | 776 |
-| **granite-embedding-311m-multilingual-r2** | **311M** | **768** | **64.0** | **63.9** | **52.6** | **71.7** | **28.0** | **1,299** |
+| multilingual-e5-small | 96M | 384 | 50.9 | 51.3 | 46.5 | 38.8 | 20.3 | 2,290.20 |
+| **granite-embedding-97m-multilingual-r2** | **97M** | **384** | **59.6** | **60.5** | **50.1** | **65.6** | **24.9** | **3,378.60** |
+| F2LLM-v2-80M | 80M | 320 | 50.13 | - | 47.5 | - | - | 2,497.71 |
+| jina-embeddings-v5-text-nano | 239M | 768 | 63.3 | 71.2 | 58.8 | 63.6 | 25.2 | 1,080.78 |
+| harrier-oss-v1-270m | 270M | 640 | 66.4 | 62.4 | 52.1 | 65.0 | 32.9 | 2,055.31 |
+| multilingual-e5-base | 278M | 768 | 52.7 | 52.6 | 49.0 | 40.5 | 23.4 | 1,800.22 |
+| embeddinggemma-300m | 300M | 768 | 62.5 | 69.0 | 54.6 | 55.4 | 26.1 | 1,277.07 |
+| gte-multilingual-base | 305M | 768 | 57.2 | 57.5 | 50.8 | 62.1 | 19.0 | 1,608.97 |
+| snowflake-arctic-embed-m-v2.0 | 305M | 768 | 54.8 | 55.2 | 58.4 | 55.4 | 23.3 | 2,754.16 |
+| **granite-embedding-311m-multilingual-r2** | **311M** | **768** | **64.0** | **63.9** | **52.6** | **71.7** | **28.0** | **3,074.67** |
 
 ### Matryoshka Embeddings (311M Multilingual)
 
