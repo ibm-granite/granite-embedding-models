@@ -152,7 +152,7 @@ Performance across the main multilingual benchmark suite. Scores are averages ac
 |---|---|---|---|---|---|---|---|---:|
 | multilingual-e5-small | 96M | 384 | 50.9 | 51.3 | 46.5 | 38.8 | 20.3 | 2,290.20 |
 | **granite-embedding-97m-multilingual-r2** | **97M** | **384** | **59.6** | **60.5** | **50.1** | **65.6** | **24.9** | **3,378.60** |
-| F2LLM-v2-80M | 80M | 320 | 50.13 | - | 47.5 | - | - | 2,497.71 |
+| F2LLM-v2-80M | 80M | 320 | 50.1 | 68.0 | 47.5 | - | - | 2,497.71 |
 | jina-embeddings-v5-text-nano | 239M | 768 | 63.3 | 71.2 | 58.8 | 63.6 | 25.2 | 1,080.78 |
 | harrier-oss-v1-270m | 270M | 640 | 66.4 | 62.4 | 52.1 | 65.0 | 32.9 | 2,055.31 |
 | multilingual-e5-base | 278M | 768 | 52.7 | 52.6 | 49.0 | 40.5 | 23.4 | 1,800.22 |
