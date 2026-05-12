@@ -217,20 +217,17 @@ The granite embedding r2 models incorporate key enhancements from the ModernBERT
 
 
 ## Data Collection
-Granite embedding r2 models are trained using data from four key sources: 
-1. Unsupervised title-body paired data scraped from the web
-2. Publicly available paired with permissive, enterprise-friendly license
-3. IBM-internal paired data targetting specific technical domains
-4. IBM-generated synthetic data
 
-Notably, we _do not use_ the popular MS-MARCO retrieval dataset in our training corpus due to its non-commercial license (many open-source models use this dataset due to its high quality). 
-
-The underlying encoder models using GneissWeb, an IBM-curated dataset composed exclusively of open, commercial-friendly sources.
-
-For governance, all our data undergoes a data clearance process subject to technical, business, and governance review. This comprehensive process captures critical information about the data, including but not limited to their content description ownership, intended use, data classification, licensing information, usage restrictions, how the data will be acquired, as well as an assessment of sensitive information (i.e, personal information). 
+Both embedding models are trained on a mixture of IBM‑curated datasets, publicly available data, and internally generated or synthetic data. Public web‑derived data used in training is selected and filtered using IBM‑developed quality, deduplication, and governance processes intended to reduce risk in downstream commercial use. Notably, we do not use MS-MARCO training data. The models are first pretrained using [GneissWeb](https://huggingface.co/datasets/ibm-granite/GneissWeb), an IBM‑curated dataset derived from publicly available web content and processed using IBM's data preparation and governance tooling—along with additional IBM‑curated and other publicly available sources. Datasets undergo IBM governance review to assess licensing considerations, ownership signals, and personal data risks. These processes are designed to contribute to responsible use and enterprise deployment. 
 
 ## Infrastructure
-We trained the granite embedding english r2 models using IBM's computing cluster, BlueVela Cluster, which is outfitted with NVIDIA H100 80GB GPUs. This cluster provides a scalable and efficient infrastructure for training our models over multiple GPUs.
+
+We trained the granite embedding r2 models using IBM's computing cluster, BlueVela Cluster, which is outfitted with NVIDIA H100 80GB GPUs. This cluster provides a scalable and efficient infrastructure for training our models over multiple GPUs.
 
 ## Ethical Considerations and Limitations
-Granite-embedding-english-r2 leverages both permissively licensed open-source and select proprietary data for enhanced performance. The training data for the base language model was filtered to remove text containing hate, abuse, and profanity. Granite-embedding-english-r2 is trained only for English texts, and has a context length of 8192 tokens (longer texts will be truncated to this size).
+
+The training data for all R2 models was filtered to remove text containing hate, abuse, and profanity.
+
+**English models** (granite-embedding-english-r2, granite-embedding-small-english-r2) are trained only for English texts and have a context length of 8,192 tokens (longer texts will be truncated).
+
+**Multilingual models** (granite-embedding-311m-multilingual-r2, granite-embedding-97m-multilingual-r2) support 200+ languages with enhanced retrieval quality for 52 languages, and have a context length of 32,768 tokens. While the models cover a broad set of languages, retrieval quality may vary across languages depending on the amount and quality of training data available for each language. Performance on low-resource languages may be lower than on the 52 enhanced languages.
